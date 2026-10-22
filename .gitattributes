@@ -1,0 +1,6 @@
+* text=auto
+# cmd misreads batch files with LF line endings (labels and goto break).
+*.bat text eol=crlf
+*.cmd text eol=crlf
+# sh refuses CRLF scripts.
+*.sh text eol=lf

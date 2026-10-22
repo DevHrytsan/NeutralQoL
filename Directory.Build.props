@@ -1,0 +1,27 @@
+<Project>
+  <!-- The game path is looked up in this order, first hit wins:
+       1. -p:GamePath="..." on the command line
+       2. the NO_GAME_PATH environment variable
+       3. GamePath.user.props next to this file (gitignored, written by tools/setup.py)
+       4. the default Steam library (registry on Windows, ~/.steam on Linux) -->
+  <PropertyGroup>
+    <GamePath Condition="'$(GamePath)' == '' and '$(NO_GAME_PATH)' != ''">$(NO_GAME_PATH)</GamePath>
+  </PropertyGroup>
+
+  <Import Project="$(MSBuildThisFileDirectory)GamePath.user.props" Condition="Exists('$(MSBuildThisFileDirectory)GamePath.user.props')" />
+
+  <PropertyGroup Condition="'$(GamePath)' == '' and $([MSBuild]::IsOSPlatform('Windows'))">
+    <SteamPath>$([MSBuild]::GetRegistryValue('HKEY_CURRENT_USER\Software\Valve\Steam', 'SteamPath'))</SteamPath>
+    <GamePath Condition="'$(SteamPath)' != '' and Exists('$(SteamPath)\steamapps\common\Nuclear Option')">$(SteamPath)\steamapps\common\Nuclear Option</GamePath>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(GamePath)' == '' and !$([MSBuild]::IsOSPlatform('Windows'))">
+    <GamePath Condition="Exists('$(HOME)/.steam/steam/steamapps/common/Nuclear Option')">$(HOME)/.steam/steam/steamapps/common/Nuclear Option</GamePath>
+    <GamePath Condition="'$(GamePath)' == '' and Exists('$(HOME)/.local/share/Steam/steamapps/common/Nuclear Option')">$(HOME)/.local/share/Steam/steamapps/common/Nuclear Option</GamePath>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <ManagedPath>$(GamePath)\NuclearOption_Data\Managed</ManagedPath>
+    <PluginsPath>$(GamePath)\BepInEx\plugins</PluginsPath>
+  </PropertyGroup>
+</Project>

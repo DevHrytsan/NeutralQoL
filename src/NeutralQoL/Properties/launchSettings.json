@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "Nuclear Option": {
+      "commandName": "Executable",
+      "executablePath": "cmd.exe",
+      "commandLineArgs": "/c start steam://rungameid/2168680"
+    }
+  }
+}

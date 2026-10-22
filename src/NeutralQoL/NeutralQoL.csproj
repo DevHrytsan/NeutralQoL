@@ -1,0 +1,58 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <AssemblyName>NeutralQoL</AssemblyName>
+    <RootNamespace>NeutralQoL</RootNamespace>
+    <Version>0.17.0</Version>
+    <LangVersion>latest</LangVersion>
+    <Nullable>disable</Nullable>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <!-- The game's Mono profile ships older System.* versions than netstandard; harmless at runtime. -->
+    <MSBuildWarningsAsMessages>MSB3277</MSBuildWarningsAsMessages>
+    <!-- Builds stay in the repo; -p:DeployToGame=true, or the deploy option of tools/setup.py
+         set once, also copies the plugin into the game. -->
+    <DeployToGame Condition="'$(DeployToGame)' == ''">false</DeployToGame>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BepInEx.Core" Version="5.4.21" PrivateAssets="all" />
+    <PackageReference Include="BepInEx.PluginInfoProps" Version="2.1.0" PrivateAssets="all" />
+  </ItemGroup>
+
+  <!-- Game and Unity assemblies come from the install, so they always match the game build. -->
+  <ItemGroup>
+    <Reference Include="$(ManagedPath)\Assembly-CSharp.dll" Private="false" />
+    <Reference Include="$(ManagedPath)\Mirage.dll" Private="false" />
+    <Reference Include="$(ManagedPath)\Rewired_Core.dll" Private="false" />
+    <Reference Include="$(ManagedPath)\UnityEngine.dll" Private="false" />
+    <Reference Include="$(ManagedPath)\UnityEngine.CoreModule.dll" Private="false" />
+    <Reference Include="$(ManagedPath)\UnityEngine.IMGUIModule.dll" Private="false" />
+    <Reference Include="$(ManagedPath)\UnityEngine.InputLegacyModule.dll" Private="false" />
+    <Reference Include="$(ManagedPath)\UnityEngine.PhysicsModule.dll" Private="false" />
+    <Reference Include="$(ManagedPath)\UnityEngine.ScreenCaptureModule.dll" Private="false" />
+    <Reference Include="$(ManagedPath)\UnityEngine.TextRenderingModule.dll" Private="false" />
+    <Reference Include="$(ManagedPath)\UnityEngine.UI.dll" Private="false" />
+    <Reference Include="$(ManagedPath)\UnityEngine.UIModule.dll" Private="false" />
+    <Reference Include="$(ManagedPath)\Unity.TextMeshPro.dll" Private="false" />
+    <Reference Include="$(ManagedPath)\Unity.RenderPipelines.Core.Runtime.dll" Private="false" />
+    <Reference Include="$(ManagedPath)\Unity.RenderPipelines.Universal.Runtime.dll" Private="false" />
+  </ItemGroup>
+
+  <!-- Without this, a wrong game path shows up as hundreds of missing type errors. -->
+  <Target Name="CheckGamePath" BeforeTargets="ResolveAssemblyReferences" Condition="!Exists('$(ManagedPath)\Assembly-CSharp.dll')">
+    <Error Condition="'$(GamePath)' == ''" Text="Nuclear Option not found in the default Steam library. Run: python tools/setup.py (searches every Steam library), or set NO_GAME_PATH, or pass -p:GamePath=&quot;...\Nuclear Option&quot;." />
+    <Error Condition="'$(GamePath)' != ''" Text="Nuclear Option not found at '$(GamePath)' (no NuclearOption_Data\Managed\Assembly-CSharp.dll). Fix the path: python tools/setup.py --game &quot;...\Nuclear Option&quot;, NO_GAME_PATH or -p:GamePath." />
+  </Target>
+
+  <Target Name="WarnNoBepInEx" AfterTargets="Build" Condition="'$(DeployToGame)' == 'true' and !Exists('$(GamePath)\BepInEx')">
+    <Warning Text="Not deployed: BepInEx is not installed in '$(GamePath)'." />
+  </Target>
+
+  <Target Name="DeployPlugin" AfterTargets="Build" Condition="'$(DeployToGame)' == 'true' and Exists('$(GamePath)\BepInEx')">
+    <Copy SourceFiles="$(TargetPath);$(TargetDir)$(TargetName).pdb" DestinationFolder="$(PluginsPath)\NeutralQoL" SkipUnchangedFiles="true" />
+    <Message Importance="high" Text="NeutralQoL deployed to $(PluginsPath)\NeutralQoL" />
+  </Target>
+
+</Project>

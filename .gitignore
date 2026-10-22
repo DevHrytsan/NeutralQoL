@@ -1,0 +1,20 @@
+# Build output
+bin/
+obj/
+dist/
+Build/
+
+# IDEs
+.vs/
+.idea/
+.vscode/
+*.user
+*.DotSettings.user
+# Decompiled game code is the developer's property, SO NEVER COMMIT IT.
+decomp/
+
+# Python
+__pycache__/
+
+# Per machine game path and deploy choice, written by tools/setup.py.
+GamePath.user.props

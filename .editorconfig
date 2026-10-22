@@ -1,0 +1,76 @@
+root = true
+
+[*]
+# Line endings are left to .gitattributes.
+charset = utf-8
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 4
+
+[*.{csproj,props,targets,json,yml,yaml}]
+indent_size = 2
+
+[*.md]
+trim_trailing_whitespace = false
+
+[*.cs]
+# Layout used across the code base: Allman braces, usings outside the namespace.
+csharp_new_line_before_open_brace = all
+csharp_new_line_before_else = true
+csharp_new_line_before_catch = true
+csharp_new_line_before_finally = true
+csharp_using_directive_placement = outside_namespace:suggestion
+dotnet_sort_system_directives_first = true
+csharp_style_var_for_built_in_types = true:silent
+csharp_style_var_when_type_is_apparent = true:silent
+csharp_prefer_braces = when_multiline:silent
+
+# Naming follows Unity's engine and uGUI source. The IDE1006 line makes
+# dotnet build -p:EnforceCodeStyleInBuild=true report it too.
+dotnet_diagnostic.IDE1006.severity = warning
+dotnet_naming_symbols.private_constants.applicable_kinds = field
+dotnet_naming_symbols.private_constants.applicable_accessibilities = private
+dotnet_naming_symbols.private_constants.required_modifiers = const
+
+dotnet_naming_symbols.private_static_fields.applicable_kinds = field
+dotnet_naming_symbols.private_static_fields.applicable_accessibilities = private
+dotnet_naming_symbols.private_static_fields.required_modifiers = static
+
+dotnet_naming_symbols.private_fields.applicable_kinds = field
+dotnet_naming_symbols.private_fields.applicable_accessibilities = private, protected, private_protected, protected_internal
+
+dotnet_naming_symbols.public_members.applicable_kinds = property, method, field, event, class, struct, interface, enum, delegate, namespace
+dotnet_naming_symbols.public_members.applicable_accessibilities = public, internal
+
+# Parameters are left out: Harmony injects by name (__instance, __state, ___field).
+dotnet_naming_symbols.locals_and_parameters.applicable_kinds = local
+
+dotnet_naming_style.k_prefix.capitalization = pascal_case
+dotnet_naming_style.k_prefix.required_prefix = k_
+dotnet_naming_style.s_prefix.capitalization = pascal_case
+dotnet_naming_style.s_prefix.required_prefix = s_
+dotnet_naming_style.m_prefix.capitalization = pascal_case
+dotnet_naming_style.m_prefix.required_prefix = m_
+dotnet_naming_style.pascal.capitalization = pascal_case
+dotnet_naming_style.camel.capitalization = camel_case
+
+dotnet_naming_rule.private_constants.symbols = private_constants
+dotnet_naming_rule.private_constants.style = k_prefix
+dotnet_naming_rule.private_constants.severity = warning
+
+dotnet_naming_rule.private_static_fields.symbols = private_static_fields
+dotnet_naming_rule.private_static_fields.style = s_prefix
+dotnet_naming_rule.private_static_fields.severity = warning
+
+dotnet_naming_rule.private_fields.symbols = private_fields
+dotnet_naming_rule.private_fields.style = m_prefix
+dotnet_naming_rule.private_fields.severity = warning
+
+dotnet_naming_rule.public_members.symbols = public_members
+dotnet_naming_rule.public_members.style = pascal
+dotnet_naming_rule.public_members.severity = warning
+
+dotnet_naming_rule.locals_and_parameters.symbols = locals_and_parameters
+dotnet_naming_rule.locals_and_parameters.style = camel
+dotnet_naming_rule.locals_and_parameters.severity = warning
