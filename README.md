@@ -13,11 +13,18 @@ Client side quality of life mod for Nuclear Option.
 
 **Manual:**
 
-1. Install if don't have [BepInEx 5.4.x x64](https://github.com/BepInEx/BepInEx/releases)
-   into the game folder and start the game once.
+1. If you don't have it yet, install
+   [BepInEx 5.4.x x64](https://github.com/BepInEx/BepInEx/releases) into
+   the game folder and start the game once.
 2. Download `NeutralQoL.zip` from the
    [latest release](https://github.com/DevHrytsan/NeutralQoL/releases/latest).
-3. Unzip it into `BepInEx/plugins/NeutralQoL/` in the game folder.
+3. Extract it (right click, **Extract All**) into
+   `BepInEx/plugins/NeutralQoL/` in the game folder, so the file ends up at
+   `BepInEx/plugins/NeutralQoL/NeutralQoL.dll`. Windows opens a zip like a
+   normal folder, which is why it may not look zipped. BepInEx loads only
+   `.dll` files, so a `.zip` placed in `plugins` does nothing.
+4. Start the game. The Settings window now has a **QoL** tab. If it
+   doesn't, open `BepInEx/LogOutput.log` and search for `NeutralQoL`.
 
 **(When it will available) With the Nuclear Option Mod Manager (NOMM):** find NeutralQoL in the mod
 list and install it. NOMM keeps it up to date.
