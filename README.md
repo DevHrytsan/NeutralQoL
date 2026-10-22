@@ -11,6 +11,10 @@ Client side quality of life mod for Nuclear Option.
 
 ## Installation
 
+**With the [Nuclear Option Mod Manager (NOMM)](https://github.com/Combat787/NOMM)
+(easiest):** find NeutralQoL in the mod list and install it. NOMM keeps it
+up to date.
+
 **Manual:**
 
 1. If you don't have it yet, install
@@ -25,9 +29,6 @@ Client side quality of life mod for Nuclear Option.
    `.dll` files, so a `.zip` placed in `plugins` does nothing.
 4. Start the game. The Settings window now has a **QoL** tab. If it
    doesn't, open `BepInEx/LogOutput.log` and search for `NeutralQoL`.
-
-**(When it will available) With the Nuclear Option Mod Manager (NOMM):** find NeutralQoL in the mod
-list and install it. NOMM keeps it up to date.
 
 ## Settings
 
