@@ -76,8 +76,14 @@ game's own settings.
 
 | Feature | Default | What it does |
 | --- | --- | --- |
+| Bomb arming reminder | on | While a bomb with an arming delay is selected (nuclear bombs and some regular ones), shows `[TOO LOW TO ARM]` when a bomb dropped now would break on hitting the ground or water before it arms, and `[LOW BURST]` when it would go off below its normal height, including on the ground or under water. |
 | Jamming pod as a switch | off | Tap Fire to start jamming and again to stop, instead of holding the button. |
 | Open bay doors on weapon select | off | Keeps the selected weapon's bay doors open while it is selected. Only you see it; flight and launch timing are unchanged. |
+
+### Always on
+
+These fixes have no setting:
+- Loadout weapon lists refresh: fixes vanilla issue that nukes don't show up in the loadout menu on your first spawn, without going back to the map.
 
 ## Problems
 

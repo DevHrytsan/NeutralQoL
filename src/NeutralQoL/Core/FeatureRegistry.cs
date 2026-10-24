@@ -28,10 +28,10 @@ namespace NeutralQoL.Core
                 }
                 owner.Init();
             }
-            foreach (var feature in All.Where(f => f.Enabled == null))
+            foreach (var feature in All.Where(f => !f.Bound))
                 Plugin.Log.LogWarning($"{feature.Section}.{feature.Name} skipped: owner {feature.PartOf.Name} not found");
-            All = All.Where(f => f.Enabled != null).ToList();
-            foreach (var feature in All)
+            All = All.Where(f => f.Bound).ToList();
+            foreach (var feature in All.Where(f => f.Enabled != null))
             {
                 var f = feature;
                 feature.Enabled.SettingChanged += (_, __) => Apply(f);

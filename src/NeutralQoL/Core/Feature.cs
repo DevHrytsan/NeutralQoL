@@ -20,11 +20,13 @@ namespace NeutralQoL.Core
         // True keeps a feature's code in the build but out of the mod: no config
         // entry, no patches, no ticking. For work put on hold.
         public virtual bool Shelved => false;
+        public virtual bool AlwaysOn => false;
         // A part has no toggle in the tab. Its on/off and options live under the owner,
         // and it only runs while the owner is on.
         public virtual Type PartOf => null;
         public Feature Owner { get; private set; }
-        internal bool Wanted => Enabled.Value && (Owner == null || Owner.Wanted);
+        internal bool Wanted => AlwaysOn || (Enabled.Value && (Owner == null || Owner.Wanted));
+        internal bool Bound { get; private set; }
 
         public FeatureState State { get; private set; }
         public string BrokenReason { get; private set; }
@@ -61,6 +63,9 @@ namespace NeutralQoL.Core
         {
             m_Config = cfg;
             Owner = owner;
+            Bound = true;
+            if (AlwaysOn)
+                return;
             Enabled = owner != null
                 ? owner.Bind(Name, DefaultOn, Description)
                 : cfg.Bind(Section, Name, DefaultOn, Description);

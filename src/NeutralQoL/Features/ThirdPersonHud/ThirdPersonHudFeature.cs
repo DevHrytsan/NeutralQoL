@@ -18,7 +18,7 @@ namespace NeutralQoL.Features.ThirdPersonHud
         public override string Description =>
             "Shows your flight HUD and minimap outside the cockpit, in the chase and orbit views, for your own aircraft. The chase view only shows it while the camera sits behind or under the aircraft, as the Mission Editor does.";
 
-        protected override Type[] PatchClasses => new[] { typeof(ChaseInputPatch), typeof(OrbitUpdatePatch), typeof(HudUpdatePatch), typeof(FuelGaugePatch), typeof(ThrottleGaugePatch), typeof(CombatLatePatch), typeof(CameraLatePatch) };
+        protected override Type[] PatchClasses => new[] { typeof(ChaseInputPatch), typeof(OrbitUpdatePatch), typeof(HudUpdatePatch), typeof(FuelGaugePatch), typeof(ThrottleGaugePatch) };
 
         private static ConfigEntry<bool> s_InChase;
         private static ConfigEntry<bool> s_InOrbit;
@@ -79,8 +79,6 @@ namespace NeutralQoL.Features.ThirdPersonHud
             Targets.Method(typeof(ThrottleGauge), "UpdateThrottleDisplay");
             s_FuelReading = Targets.Field<FuelGauge, TextMeshProUGUI>("fuelReading");
             s_ThrottleReading = Targets.Field<ThrottleGauge, TextMeshProUGUI>("throttleReading");
-            s_CombatLateUpdate = AccessTools.MethodDelegate<Action<CombatHUD>>(Targets.Method(typeof(CombatHUD), "LateUpdate"));
-            Targets.Method(typeof(CameraStateManager), "LateUpdate");
 
             var positions = AccessTools.Field(typeof(CameraChaseState), "currentPos").FieldType;
             int max = 0;
@@ -239,68 +237,6 @@ namespace NeutralQoL.Features.ThirdPersonHud
             private static void Postfix(ThrottleGauge __instance)
             {
                 AlignReading(__instance, s_ThrottleReading(__instance));
-            }
-        }
-
-        // CombatHUD.LateUpdate projects unit markers through the main camera, but the
-        // chase and orbit cameras move in CameraStateManager.LateUpdate, in no set
-        // order. If the HUD ran first, markers slid off their units. So the game's
-        // LateUpdate is held back and run once, unchanged, right after the camera moves.
-        private static Action<CombatHUD> s_CombatLateUpdate;
-        private static int s_CombatFrame = -1;
-        private static int s_HeldFrame = -1;
-        private static bool s_RunningCombat;
-
-        private static bool Driving()
-        {
-            var cam = SceneSingleton<CameraStateManager>.i;
-            return s_Driven != null && cam != null && cam.currentState == s_Driven;
-        }
-
-        [HarmonyPatch(typeof(CombatHUD), "LateUpdate")]
-        private static class CombatLatePatch
-        {
-            private static bool Prefix()
-            {
-                if (s_RunningCombat)
-                    return true;
-                int frame = Time.frameCount;
-                // Already run after the camera this frame.
-                if (s_CombatFrame == frame)
-                    return false;
-                if (Driving())
-                {
-                    s_HeldFrame = frame;
-                    return false;
-                }
-                s_CombatFrame = frame;
-                return true;
-            }
-        }
-
-        [HarmonyPatch(typeof(CameraStateManager), "LateUpdate")]
-        private static class CameraLatePatch
-        {
-            private static void Postfix()
-            {
-                int frame = Time.frameCount;
-                // A call held back this frame still runs if the view just
-                // ended.
-                if (s_CombatFrame == frame || (!Driving() && s_HeldFrame != frame))
-                    return;
-                var hud = SceneSingleton<CombatHUD>.i;
-                if (hud == null)
-                    return;
-                s_CombatFrame = frame;
-                s_RunningCombat = true;
-                try
-                {
-                    s_CombatLateUpdate(hud);
-                }
-                finally
-                {
-                    s_RunningCombat = false;
-                }
             }
         }
 

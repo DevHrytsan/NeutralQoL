@@ -169,7 +169,7 @@ namespace NeutralQoL.Core.SettingsTab
         // Two independent columns, each section to the one with fewer rows so far.
         private void Build()
         {
-            var sections = FeatureRegistry.All.Where(f => f.ShowInMenu && f.Owner == null).GroupBy(f => f.Section).ToList();
+            var sections = FeatureRegistry.All.Where(f => f.ShowInMenu && !f.AlwaysOn && f.Owner == null).GroupBy(f => f.Section).ToList();
             if (sections.Count == 0)
             {
                 AddTitle("No features yet", s_PanelTemplate != null ? NewRow(s_PanelTemplate, m_Content).transform : m_Content);

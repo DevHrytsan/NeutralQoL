@@ -110,11 +110,15 @@ namespace NeutralQoL.Features.LoadoutCameraFocus
         // measured renderer is destroyed (mounts respawn on change).
         private static Aircraft s_MeasuredAircraft;
         private static Bounds s_AircraftBox;
+        // World copy of s_WeaponLocal, refreshed every frame.
         private static Vector3 s_WeaponCentre;
+        // In the aircraft's space, so the camera rides along when the deck of a
+        // carrier heaves and pitches instead of bobbing past a fixed point.
+        private static Vector3 s_WeaponLocal;
         private static float s_WeaponRadius;
-        // What was measured. The weapon above follows it, so picking another
-        // weapon glides the camera and zoom instead of jumping.
-        private static Vector3 s_TargetCentre;
+        // What was measured, in the aircraft's space. The weapon above follows it,
+        // so picking another weapon glides the camera and zoom instead of jumping.
+        private static Vector3 s_TargetLocal;
         private static float s_TargetRadius;
         private static Vector3 s_CentreVelocity;
         private static float s_RadiusVelocity;
@@ -347,15 +351,19 @@ namespace NeutralQoL.Features.LoadoutCameraFocus
         {
             if (!s_Applied)
             {
-                s_WeaponCentre = s_TargetCentre;
+                s_WeaponLocal = s_TargetLocal;
                 s_WeaponRadius = s_TargetRadius;
                 s_CentreVelocity = Vector3.zero;
                 s_RadiusVelocity = 0f;
-                return;
             }
-            float dt = Time.unscaledDeltaTime;
-            s_WeaponCentre = Vector3.SmoothDamp(s_WeaponCentre, s_TargetCentre, ref s_CentreVelocity, k_BlendSmoothing, float.MaxValue, dt);
-            s_WeaponRadius = Mathf.SmoothDamp(s_WeaponRadius, s_TargetRadius, ref s_RadiusVelocity, k_BlendSmoothing, float.MaxValue, dt);
+            else
+            {
+                float dt = Time.unscaledDeltaTime;
+                s_WeaponLocal = Vector3.SmoothDamp(s_WeaponLocal, s_TargetLocal, ref s_CentreVelocity, k_BlendSmoothing, float.MaxValue, dt);
+                s_WeaponRadius = Mathf.SmoothDamp(s_WeaponRadius, s_TargetRadius, ref s_RadiusVelocity, k_BlendSmoothing, float.MaxValue, dt);
+            }
+            if (s_MeasuredAircraft != null)
+                s_WeaponCentre = s_MeasuredAircraft.transform.TransformPoint(s_WeaponLocal);
         }
 
         private static float Heading(Vector3 offset) => Mathf.Atan2(offset.x, offset.z) * Mathf.Rad2Deg;
@@ -539,7 +547,7 @@ namespace NeutralQoL.Features.LoadoutCameraFocus
                 weapon = new Bounds(centre, Vector3.zero);
                 any = true;
             }
-            s_TargetCentre = any ? weapon.center : aircraftTransform.position;
+            s_TargetLocal = any ? aircraftTransform.InverseTransformPoint(weapon.center) : Vector3.zero;
             s_TargetRadius = Mathf.Max(weapon.extents.magnitude, k_MinWeaponRadius);
             s_RendererCache.Clear();
         }
@@ -659,7 +667,7 @@ namespace NeutralQoL.Features.LoadoutCameraFocus
         // symmetry) keep the side the camera is on, so it does not swing round.
         private static float PickSide(Aircraft aircraft, Vector3 cameraPosition)
         {
-            var local = aircraft.transform.InverseTransformPoint(s_TargetCentre);
+            var local = s_TargetLocal;
             if (Mathf.Abs(local.x - s_AircraftBox.center.x) > k_CentreHalfWidth)
                 return Mathf.Sign(local.x - s_AircraftBox.center.x);
             float camX = aircraft.transform.InverseTransformPoint(cameraPosition).x;
@@ -712,12 +720,12 @@ namespace NeutralQoL.Features.LoadoutCameraFocus
 
             // Keep the weapon's side if the camera fits there; otherwise (hangar wall)
             // use the other side if it has more room, and stay on it.
-            float room = Pose(aircraft, aircraftTransform, SideDirection(s_Side), IsBelowMiddle(aircraftTransform), fit, out var position, out var blocker);
+            float room = Pose(aircraft, aircraftTransform, SideDirection(s_Side), IsBelowMiddle(), fit, out var position, out var blocker);
             if (room < 0f && !s_SideSwitched)
             {
                 // Once per list, so two cramped sides cannot flip it every frame.
                 s_SideSwitched = true;
-                float otherRoom = Pose(aircraft, aircraftTransform, SideDirection(-s_Side), IsBelowMiddle(aircraftTransform), fit, out var otherPosition, out _);
+                float otherRoom = Pose(aircraft, aircraftTransform, SideDirection(-s_Side), IsBelowMiddle(), fit, out var otherPosition, out _);
                 if (otherRoom > room)
                 {
                     Plugin.Log.LogInfo($"Menus.Loadout camera focus: no room on the weapon's side ('{blocker}' in the way), using the other side");
@@ -741,9 +749,9 @@ namespace NeutralQoL.Features.LoadoutCameraFocus
         // Weapons under the middle of the aircraft are viewed from low down,
         // looking up; weapons above it from their own height. Decided by the
         // measured weapon so it does not flip mid-glide.
-        private static bool IsBelowMiddle(Transform aircraftTransform)
+        private static bool IsBelowMiddle()
         {
-            return aircraftTransform.InverseTransformPoint(s_TargetCentre).y < s_AircraftBox.center.y;
+            return s_TargetLocal.y < s_AircraftBox.center.y;
         }
 
         // Places the camera along a horizontal direction in aircraft space and
