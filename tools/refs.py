@@ -7,7 +7,7 @@ JetBrains Refasmer, pinned in the repo's dotnet tool manifest). This writes
 that repo's contents in the folder layout the build expects, so CI passes the
 folder as -p:GamePath unchanged.
 
-    python tools/refs.py --game-version 0.34.1 [--out ..\\NeutralQoL-refs] [--game PATH]
+    python tools/refs.py --game-version 0.34.2 [--out ..\\NeutralQoL-refs] [--game PATH]
 
 Re-run after every game update, then commit and push the refs repo.
 """
@@ -51,7 +51,7 @@ def referenced_dlls():
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split('\n\n')[0])
     ap.add_argument('--game-version', required=True,
-                    help='game version these refs come from, e.g. 0.34.1 (CI writes it into the release manifest)')
+                    help='game version these refs come from, e.g. 0.34.2 (CI writes it into the release manifest)')
     ap.add_argument('--out', default=os.path.join(os.path.dirname(REPO), 'NeutralQoL-refs'),
                     help='clone of the private refs repo (default ..\\NeutralQoL-refs)')
     ap.add_argument('--game', help='game install folder (default: the one dotnet build uses)')

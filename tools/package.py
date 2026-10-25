@@ -4,7 +4,7 @@ NOMM unpacks a mod archive into BepInEx/disabledPlugins/<id>/ and moves it to
 plugins/ when enabled, so NeutralQoL.dll sits at the root of the zip. Also writes
 the NOMNOM registry manifest for that release (version, download URL, hash).
 
-    python tools/package.py --game-version 0.34.1 [--owner NAME] [--repo NAME]
+    python tools/package.py --game-version 0.34.2 [--owner NAME] [--repo NAME]
 
 Upload dist/NeutralQoL.zip to a GitHub release tagged v<version>. The manifest in
 dist/NeutralQoL.json goes into NOMNOM's modManifests/ folder by pull request; once
@@ -27,7 +27,7 @@ MOD_ID = 'NeutralQoL'
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split('\n\n')[0])
-    ap.add_argument('--game-version', required=True, help='latest game version the release supports, e.g. 0.34.1')
+    ap.add_argument('--game-version', required=True, help='latest game version the release supports, e.g. 0.34.2')
     ap.add_argument('--owner', default='DevHrytsan', help='GitHub owner of the release repo')
     ap.add_argument('--repo', default='NeutralQoL', help='GitHub repo that hosts releases')
     args = ap.parse_args()
