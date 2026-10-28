@@ -99,7 +99,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for setup, the build commands and the
 rules every feature follows. To build a release zip:
 
 ```
-python tools/package.py --game-version 0.34.2
+python tools/package.py --game-version <version>
 ```
 
 ## License
