@@ -80,10 +80,17 @@ game's own settings.
 | Jamming pod as a switch | off | Tap Fire to start jamming and again to stop, instead of holding the button. |
 | Open bay doors on weapon select | off | Keeps the selected weapon's bay doors open while it is selected. Only you see it; flight and launch timing are unchanged. |
 
+### Controls
+
+| Feature | Default | What it does |
+| --- | --- | --- |
+| Idle stop before airbrake | on | Throttle down to 0% opens the airbrake. Click: press again to close it at idle. Hold: open only while held. |
+
 ### Always on
 
 These fixes have no setting:
 - Loadout weapon lists refresh: fixes vanilla issue that nukes don't show up in the loadout menu on your first spawn, without going back to the map.
+- Throttle reading never below 0%: throttle gauge shows 0% instead of -1%, and AIRBRAKE only while the airbrake is open.
 
 ## Problems
 
